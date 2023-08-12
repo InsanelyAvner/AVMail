@@ -1,0 +1,45 @@
+#app {
+    padding: 60px 25px;
+}
+
+#email {
+    width: 60%;
+    margin-right: 15px;
+}
+
+#generate, #refresh {
+    width: auto;
+}
+
+#generate {
+    margin-right: 15px;
+}
+
+#content {
+    width: 100%;
+    height: 40vh;
+}
+.emailSection {
+    background: var(--bs-gray-100);
+    padding: 50px 50px;
+    border-radius: 15px;
+}
+
+@media  (max-width: 768px) {
+    #email {
+        width: 100%;
+        margin-right: 0;
+        margin-top: 25px;
+    }
+
+    .emailSection {
+        padding: 30px;
+    }
+}
+
+
+@media  (min-width: 768px) {
+    #app {
+        padding: 60px 90px;
+    }
+}
