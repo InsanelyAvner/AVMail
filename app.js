@@ -29,6 +29,16 @@ app.get('/api/message/:id', async (req, res) => {
   res.json(message.data);
 });
 
+app.get('/api/token', async (req, res) => {
+  res.json(mailjs.token);
+});
+
+app.get('/api/login/:token', async (req, res) => {
+  mailjs.loginWithToken(req.params.token).then((e) => {
+    res.json(e);
+  })
+});
+
 
 app.listen(3000, () => {
   console.log('App listening on port 3000');

@@ -4,25 +4,33 @@ const messagesDiv = document.querySelector('#messages');
 let email;
 
 const refreshMessages = async () => {
-	try {
 		const res = await fetch('/api/messages');
 		const messages = await res.json();
 
 		console.log(messages);
+		localStorage.setItem('numOfMessages', messages.length)
 
-		if (messages.length > 0) {
-			document.getElementById("nomessages").remove();
-		}
+		// if (messages.length > 0 && document.body.contains(document.getElementById("nomessages"))) {
+		// 	document.getElementById("nomessages").remove();
+		// }
+
+		messagesDiv.innerHTML = '';
 
 		for (let msg of messages) {
 			const div = document.createElement('div');
 			div.innerHTML = `<li class="list-group-item"><a href="#" onclick="getMessage('${msg.id}')">${msg.subject}</a></li>`;
-
+	
 			messagesDiv.appendChild(div);
 		}
-	} catch (err) {
-		alert("An error occurred, please generate a new email address")
-	}
+
+		if (messages.length === 0) {
+			let nomessages = document.createElement('div')
+			nomessages.innerHTML = `<li class="list-group-item" id="nomessages">No new messages</li>`
+
+			messagesDiv.appendChild(nomessages);
+		}
+
+
 }
 
 const generateEmail = async () => {
@@ -31,17 +39,26 @@ const generateEmail = async () => {
 	const res = await fetch('/api/generate');
 	const data = await res.json();
 	email = data.email;
+
+	const res2 = await fetch('/api/token');
+	const token = await res2.json();
+
 	emailDiv.setAttribute("value", email)
-	localStorage.setItem('email', email)
+	localStorage.setItem('token', token)
+	localStorage.setItem('numOfMessages', 0)
 	location.reload()
 }
 
-if (localStorage.getItem("email")) {
-	// Display the email
-	emailDiv.setAttribute("value", localStorage.getItem("email"))
+const loginWithToken = async () => {
+	const res = await fetch(`/api/login/${localStorage.getItem("token")}`);
+	const data = await res.json();
 
-	// Display the messages
+	emailDiv.setAttribute("value", data.data.address)
 	refreshMessages();
+}
+
+if (localStorage.getItem("token")) {
+	loginWithToken();
 } else {
 	generateEmail();
 }
@@ -82,8 +99,12 @@ function back() {
 }
 
 function copyEmail() {
-
-	navigator.clipboard.writeText(localStorage.getItem("email"));
+	x = emailDiv.getAttribute("value");
+	navigator.clipboard.writeText(x);
 
 	alert("Email copied to clipboard!");
 }
+
+setInterval(async () => {
+	refreshMessages();
+}, 2500)
